@@ -1,11 +1,35 @@
 from fastapi import FastAPI
 
+from food import Food
+
 app = FastAPI()
 
-@app.get("/", description="first get route", deprecated=True)
+small_db = [{"Protien" : ['Meat', 'Dairy', 'Soya', 'Egg']},
+            {"Carbs" : ['Bread', 'Noodles', 'Cheese']},
+            {"Vitamins" : ['Fruits', 'Vegetables', 'Dhoop']}]
+
+@app.get("/")
 async def root():
     return {"message": "hello world"}
 
 @app.post("/")
 async def post():
     return {"message": "hello world from post request"}
+
+# @app.get("/foods/{foodname}")
+# async def get_food(foodname: Food):
+#     if foodname == Food.dairy:
+#         return "Hope you aint lactose intolorant"
+#     elif foodname.value == 'fruits':
+#         return "Enjoy sweet food"
+#     return "Protien ftw"
+
+@app.get("/foods")
+async def list_food(start: int=0, stop: int=5):
+    return small_db[start: stop]
+
+@app.get("/item/{item_id}")
+async def item_list(item_id: str, q: str|None = None):
+    if q:
+        return {"item" : item_id, "query": q}
+    return {"item": item_id}
