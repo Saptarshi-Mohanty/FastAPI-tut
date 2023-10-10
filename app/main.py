@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 from food import Food
 
@@ -16,20 +17,23 @@ async def root():
 async def post():
     return {"message": "hello world from post request"}
 
-# @app.get("/foods/{foodname}")
-# async def get_food(foodname: Food):
-#     if foodname == Food.dairy:
-#         return "Hope you aint lactose intolorant"
-#     elif foodname.value == 'fruits':
-#         return "Enjoy sweet food"
-#     return "Protien ftw"
+@app.get("/foods/{foodname}")
+async def get_food(foodname: Food):
+    if foodname == Food.dairy:
+        return "Hope you aint lactose intolorant"
+    elif foodname.value == 'fruits':
+        return "Enjoy sweet food"
+    return "Protien ftw"
 
-@app.get("/foods")
-async def list_food(start: int=0, stop: int=5):
-    return small_db[start: stop]
+# @app.get("/foods")
+# async def list_food(start: int=0, stop: int=5):
+#     return small_db[start: stop]
 
 @app.get("/item/{item_id}")
-async def item_list(item_id: str, q: str|None = None):
+async def item_list(item_id: str, q: str|None = None, story: bool = False):
     if q:
-        return {"item" : item_id, "query": q}
+        if story:
+            return "lorem10"
+        else:
+            return {"item" : item_id, "query": q}
     return {"item": item_id}
