@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from food import Food
+from models import Item
 
 app = FastAPI()
 
@@ -37,3 +38,10 @@ async def item_list(item_id: str, q: str|None = None, story: bool = False):
         else:
             return {"item" : item_id, "query": q}
     return {"item": item_id}
+
+@app.post("/item")
+async def get_item(item: Item):
+    item_dic = item.model_dump()
+    if item.tax:
+        item_dic.update({"price after tax": item.price+item.tax})
+    return item_dic
