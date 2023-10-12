@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
 from food import Food
@@ -45,3 +45,10 @@ async def get_item(item: Item):
     if item.tax:
         item_dic.update({"price after tax": item.price+item.tax})
     return item_dic
+
+@app.get("/item")
+async def read_item(q: str|None = Query(None, min_length=3, max_length=10, title='sample fastapi query', description='Sample api call')):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
