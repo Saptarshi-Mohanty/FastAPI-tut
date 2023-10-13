@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 from pydantic import BaseModel
 
 from food import Food
@@ -30,6 +30,19 @@ async def get_food(foodname: Food):
 # async def list_food(start: int=0, stop: int=5):
 #     return small_db[start: stop]
 
+@app.get("/item/hidden")
+async def hidden_route(hidden_query: str|None = Query(None, include_in_schema=False, alias='hq')):
+    if hidden_query:
+        return {"Hidden Query": hidden_query}
+    return {"Hidden Query": "Not found"}
+
+@app.get("/item/validation/{item_id}")
+async def item_validation(q: str|None = Query(None, max_length=10), item_id: int|None = Path(..., title="Path parameter")):
+    results = {"item ID": item_id}
+    if q:
+        results.update({"Query": q})
+    return results
+
 @app.get("/item/{item_id}")
 async def item_list(item_id: str, q: str|None = None, story: bool = False):
     if q:
@@ -47,7 +60,7 @@ async def get_item(item: Item):
     return item_dic
 
 @app.get("/item")
-async def read_item(q: str|None = Query(None, min_length=3, max_length=10, title='sample fastapi query', description='Sample api call')):
+async def read_item(q: str|None = Query(None, min_length=3, max_length=10, title='sample fastapi query', description='Sample api call', alias='simple-query')):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q:
         results.update({"q": q})
