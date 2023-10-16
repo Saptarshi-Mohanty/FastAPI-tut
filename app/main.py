@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, Path
 from pydantic import BaseModel
 
 from food import Food
-from models import Item
+from models import Item, User
 
 app = FastAPI()
 
@@ -64,4 +64,15 @@ async def read_item(q: str|None = Query(None, min_length=3, max_length=10, title
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q:
         results.update({"q": q})
+    return results
+
+@app.put("/item/{item_id}")
+async def update_item(item: Item|None=None, user: User|None=None, item_id: int = Path(...,ge=0, le=100), q: str|None = None):
+    results = {"Item ID": item_id}
+    if q:
+        results.update({"Query": q})
+    if user:
+        results.update({"User": user})
+    if item:
+        results.update({"Item": item})
     return results
