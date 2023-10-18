@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Query, Path, Body
 from pydantic import BaseModel
+from uuid import UUID
+from datetime import datetime, time
 
 from food import Food
 from models import Item, User
@@ -9,6 +11,8 @@ app = FastAPI()
 small_db = [{"Protien" : ['Meat', 'Dairy', 'Soya', 'Egg']},
             {"Carbs" : ['Bread', 'Noodles', 'Cheese']},
             {"Vitamins" : ['Fruits', 'Vegetables', 'Dhoop']}]
+
+uuid = "cd43be2f-d103-4863-8546-70d7d8ee7921"
 
 @app.get("/")
 async def root():
@@ -66,13 +70,20 @@ async def read_item(q: str|None = Query(None, min_length=3, max_length=10, title
         results.update({"q": q})
     return results
 
+# @app.put("/item/{item_id}")
+# async def update_item(item: Item|None=None, user: User|None=None, item_id: int = Path(...,ge=0, le=100), q: str|None = None):
+#     results = {"Item ID": item_id}
+#     if q:
+#         results.update({"Query": q})
+#     if user:
+#         results.update({"User": user})
+#     if item:
+#         results.update({"Item": item})
+#     return results
+
 @app.put("/item/{item_id}")
-async def update_item(item: Item|None=None, user: User|None=None, item_id: int = Path(...,ge=0, le=100), q: str|None = None):
-    results = {"Item ID": item_id}
-    if q:
-        results.update({"Query": q})
-    if user:
-        results.update({"User": user})
-    if item:
-        results.update({"Item": item})
-    return results
+async def read_items(item_id: UUID, start_time: datetime|None = Body(None)):
+    result = {"Item ID": item_id}
+    if start_time:
+        result.update({"Start Time": start_time})
+    return result
